@@ -1,0 +1,18 @@
+# Builds the starter weekly and on every change, so the template does not
+# quietly break when linglib or Mathlib move on.
+name: Build starter
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the setup script a new user would run
+        run: bash scripts/setup.sh

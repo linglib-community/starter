@@ -1,0 +1,15 @@
+name = "my_project"
+defaultTargets = ["MyProject"]
+
+# linglib is pinned to a specific commit (no release includes Eval yet; switch to a tag once one does).
+# To update, change both together (see AGENTS.md, "Updating linglib").
+[[require]]
+name = "linglib"
+git = "https://github.com/linglib-community/linglib"
+rev = "e8cca80e45e1d14582f7581042265ef819c8f2f4"
+
+[leanOptions]
+autoImplicit = false
+
+[[lean_lib]]
+name = "MyProject"
