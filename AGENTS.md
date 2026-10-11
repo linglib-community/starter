@@ -42,6 +42,22 @@ and the user has asked you to set up the project, do the following.
 | A toolchain or version mismatch error | Do not edit `lean-toolchain` or the linglib version in `lakefile.toml` to make the error go away. These must match linglib's. Report the exact error to the user. |
 | An error in a linglib file during step 5 | This is a problem in linglib, not in the user's setup. Report it with the file name and error, and suggest opening an issue on linglib. |
 
+### In a cloud workspace driven from a chat app
+
+If you are working in a cloud workspace that the user reaches through a chat app (for example the
+Claude app), rather than on their own computer:
+
+- The workspace may not last beyond this conversation. Early on, tell the user how their work
+  will be saved, and at the end of each session save it before they leave: push to their own
+  copy of the starter on GitHub if they have one and you can reach it; otherwise save to a folder
+  on their computer if the app is connected to one, or give them the changed files to download.
+  Never let a session end with unsaved work without saying so.
+- If the app can show a web page or rendered document in the chat, show results that way (for
+  example the worked example's scoreboard as a table of accounts by conditions) rather than
+  asking the user to read Lean files.
+- If setup fails because the workspace cannot reach `cache.mathlib.org` or has too little disk
+  space, say so plainly. These are limits of the workspace, not problems the user can fix.
+
 ### In GitHub Codespaces
 
 If the environment variable `CODESPACES` is `true`, setup ran automatically when the codespace

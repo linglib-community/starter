@@ -7,36 +7,37 @@ You do not need to install Lean yourself or know how to program. An AI agent ins
 everything, writes most of the Lean, and explains what it did. Your job is the part that needs a
 linguist: checking that each formal statement says what the paper says.
 
-There are two ways to start. The first needs nothing installed; the second keeps everything on
-your own computer.
+There are three ways to start. The first is the easiest for most people.
 
-## Option 1: in your browser, with nothing to install
+## Option 1: in the AI chat app you already use
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/linglib-community/starter?quickstart=1)
+This works with any AI app that can run commands in a workspace with internet access, not just
+answer in text. The Claude app (on desktop or the web) can do this. Other apps may too; check
+that yours can install software and run commands before relying on it. Agent features usually
+need a paid plan, and long sessions use credits.
 
-1. Click the button above and sign in to GitHub (a free account is enough), then choose
-   "Create codespace".
-2. Wait while the project is set up. This takes about 5 to 10 minutes the first time. When it
-   is done, an editor opens in your browser with this README and the worked example.
-3. Open the Claude Code panel (the Claude icon in the sidebar), sign in with your Claude account,
-   and ask it: "Walk me through MyProject/Example.lean."
+1. Recommended: make your own copy of this project, so your work is saved somewhere permanent.
+   On GitHub, click "Use this template", then "Create a new repository" (a free GitHub account is
+   enough). If your app can connect to GitHub, connect it.
+2. Start a new chat and give it this prompt, using the address of your copy if you made one:
 
-Some practical points:
+   > Set up the linglib starter: clone https://github.com/linglib-community/starter, read
+   > AGENTS.md, and follow its setup instructions. Then walk me through the worked example.
 
-- Codespaces are paid for by your GitHub account, which includes a free monthly allowance. This
-  project uses about 12 GB of storage, which is most of the free storage allowance, so stop the
-  codespace when you finish a session and delete it from github.com/codespaces when you no longer
-  need it.
-- The agent needs its own account. Claude Code requires a paid Claude plan, and long sessions use
-  credits.
+3. The agent tells you what it will install and asks you to confirm. Setup takes about 5 to 10
+   minutes. Then it explains the worked example and suggests what to try next.
+
+Saving your work: at the end of a session, ask the agent to save it. It can push your changes to
+your copy on GitHub, save the files to a folder on your computer if your app is connected to one,
+or give you a file to download. A new chat may start with a fresh workspace, in which case setup
+runs again (about 5 to 10 minutes).
 
 ## Option 2: on your own computer, with an AI agent
 
-You need:
+Use this if you want everything to stay on your machine. You need:
 
-- An AI agent that can edit files and run commands on your computer. This includes desktop apps
-  such as the Claude app connected to a folder, and coding tools such as Claude Code, OpenAI's
-  Codex or Cursor. An ordinary chat window that cannot run commands is not enough.
+- An AI agent that can edit files and run commands on your computer, such as the Claude app
+  connected to a folder, Claude Code, OpenAI's Codex, or Cursor.
 - About 15 GB of free disk space, and a network connection that allows access to `github.com` and
   `cache.mathlib.org`.
 - macOS or Linux works best. Windows works through WSL or with a few manual steps.
@@ -46,9 +47,21 @@ Give your agent this prompt:
 > Clone https://github.com/linglib-community/starter into a new folder called my-linglib, then
 > read AGENTS.md in that folder and follow its setup instructions.
 
-The agent will tell you what it is about to install and ask you to confirm. Setup takes about
-10 to 30 minutes depending on your connection, mostly downloading. When it is done, the agent
-will walk you through a worked example.
+Setup takes about 10 to 30 minutes depending on your connection, mostly downloading.
+
+## Option 3: in a code editor in your browser
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/linglib-community/starter?quickstart=1)
+
+This opens a full code editor in your browser with everything already set up, and the Claude
+Code panel in the sidebar. It suits workshops, where everyone needs the same environment, and
+people who are comfortable with code editors.
+
+- Codespaces are paid for by your GitHub account, which includes a free monthly allowance, or by
+  the linglib-community organization for its members. This project uses about 12 GB of storage,
+  so stop the codespace when you finish a session and delete it from github.com/codespaces when
+  you no longer need it.
+- Claude Code requires a paid Claude plan.
 
 ## What you should see at the end
 
