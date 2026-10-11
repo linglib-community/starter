@@ -42,6 +42,18 @@ and the user has asked you to set up the project, do the following.
 | A toolchain or version mismatch error | Do not edit `lean-toolchain` or the linglib version in `lakefile.toml` to make the error go away. These must match linglib's. Report the exact error to the user. |
 | An error in a linglib file during step 5 | This is a problem in linglib, not in the user's setup. Report it with the file name and error, and suggest opening an issue on linglib. |
 
+### In GitHub Codespaces
+
+If the environment variable `CODESPACES` is `true`, setup ran automatically when the codespace
+was created, so there is nothing to install. If `MyProject/Example.olean` is missing (see the path
+above), setup may still be running or may have failed: check `.lake/setup-logs/`, and tell the
+user they can also see progress with the command "Codespaces: View Creation Log". If it failed,
+run `bash scripts/setup.sh` and continue as above.
+
+Codespaces use the user's free monthly allowance, and this one takes about 12 GB of storage.
+Remind the user to stop the codespace when they finish a session, and to delete it from
+github.com/codespaces once they no longer need it (after committing anything they want to keep).
+
 ### Windows
 
 `scripts/setup.sh` needs a Unix shell. On Windows, prefer WSL if it is installed. Otherwise, do the

@@ -1,0 +1,33 @@
+// Opens this project in GitHub Codespaces (or any dev container host) with Lean,
+// linglib and the worked example already set up, and an AI agent extension installed.
+{
+  "name": "linglib starter",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+
+  // Runs once when the codespace is created (and during prebuilds, if enabled).
+  // Same script a local agent runs; takes about 5 to 10 minutes.
+  "onCreateCommand": "bash scripts/setup.sh",
+
+  // Make lean and lake available in every terminal and to the agent.
+  "remoteEnv": {
+    "PATH": "/home/vscode/.elan/bin:${containerEnv:PATH}"
+  },
+
+  // Lean needs some memory; storage is mostly the prebuilt Mathlib files (about 12 GB).
+  "hostRequirements": {
+    "memory": "8gb",
+    "storage": "32gb"
+  },
+
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["README.md", "MyProject/Example.lean"]
+    },
+    "vscode": {
+      "extensions": [
+        "leanprover.lean4",
+        "anthropic.claude-code"
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 # Builds the starter weekly and on every change, so the template does not
-# quietly break when linglib or Mathlib move on.
+# quietly break when linglib or Mathlib move on. Tests both ways in:
+# the setup script a local agent runs, and the Codespaces dev container.
 name: Build starter
 
 on:
@@ -10,9 +11,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  setup-script:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Run the setup script a new user would run
+      - name: Run the setup script a new user's agent would run
         run: bash scripts/setup.sh
+
+  devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Codespaces dev container and check the example
+        uses: devcontainers/ci@v0.3
+        with:
+          push: never
+          runCmd: lake build MyProject.Example

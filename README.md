@@ -7,25 +7,48 @@ You do not need to install Lean yourself or know how to program. An AI agent ins
 everything, writes most of the Lean, and explains what it did. Your job is the part that needs a
 linguist: checking that each formal statement says what the paper says.
 
-## What you need
+There are two ways to start. The first needs nothing installed; the second keeps everything on
+your own computer.
 
-- An AI coding agent that runs on your own computer and can edit files and run commands, such as
-  Claude Code or OpenAI's Codex. A chat window in a web browser is not enough. These agents
-  usually need a paid plan, and long sessions use credits.
+## Option 1: in your browser, with nothing to install
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/linglib-community/starter?quickstart=1)
+
+1. Click the button above and sign in to GitHub (a free account is enough), then choose
+   "Create codespace".
+2. Wait while the project is set up. This takes about 5 to 10 minutes the first time. When it
+   is done, an editor opens in your browser with this README and the worked example.
+3. Open the Claude Code panel (the Claude icon in the sidebar), sign in with your Claude account,
+   and ask it: "Walk me through MyProject/Example.lean."
+
+Some practical points:
+
+- Codespaces are paid for by your GitHub account, which includes a free monthly allowance. This
+  project uses about 12 GB of storage, which is most of the free storage allowance, so stop the
+  codespace when you finish a session and delete it from github.com/codespaces when you no longer
+  need it.
+- The agent needs its own account. Claude Code requires a paid Claude plan, and long sessions use
+  credits.
+
+## Option 2: on your own computer, with an AI agent
+
+You need:
+
+- An AI agent that can edit files and run commands on your computer. This includes desktop apps
+  such as the Claude app connected to a folder, and coding tools such as Claude Code, OpenAI's
+  Codex or Cursor. An ordinary chat window that cannot run commands is not enough.
 - About 15 GB of free disk space, and a network connection that allows access to `github.com` and
   `cache.mathlib.org`.
 - macOS or Linux works best. Windows works through WSL or with a few manual steps.
 
-## Getting started
-
-Open your agent in the folder where you keep projects, and give it this prompt:
+Give your agent this prompt:
 
 > Clone https://github.com/linglib-community/starter into a new folder called my-linglib, then
 > read AGENTS.md in that folder and follow its setup instructions.
 
 The agent will tell you what it is about to install and ask you to confirm. Setup takes about
-10 to 30 minutes depending on your connection, mostly downloading. When it is done, the agent will walk you through a worked
-example.
+10 to 30 minutes depending on your connection, mostly downloading. When it is done, the agent
+will walk you through a worked example.
 
 ## What you should see at the end
 
@@ -56,5 +79,6 @@ If you are comfortable with a terminal, run `bash scripts/setup.sh` from this fo
 - `AGENTS.md`: instructions the agent reads (`CLAUDE.md` points to it).
 - `MyProject/`: your work. `Example.lean` is the worked example; `MyFirstStudy.lean` is a
   template for formalizing a claim.
-- `scripts/setup.sh`: the setup steps, which the agent runs for you.
+- `scripts/setup.sh`: the setup steps, which the agent (or the codespace) runs for you.
+- `.devcontainer/`: the configuration for Option 1.
 - `lakefile.toml` and `lean-toolchain`: which versions of linglib and Lean this project uses.
