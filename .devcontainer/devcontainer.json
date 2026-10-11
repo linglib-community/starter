@@ -4,9 +4,10 @@
   "name": "linglib starter",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
 
-  // Runs once when the codespace is created (and during prebuilds, if enabled).
-  // Same script a local agent runs; takes about 5 to 10 minutes.
-  "onCreateCommand": "bash scripts/setup.sh",
+  // Runs when the codespace is created, and again whenever a prebuild is refreshed,
+  // so prebuilds pick up changes such as a new linglib version. Same script a local
+  // agent runs; about 5 to 10 minutes from scratch, seconds when nothing changed.
+  "updateContentCommand": "bash scripts/setup.sh",
 
   // Make lean and lake available in every terminal and to the agent.
   "remoteEnv": {
