@@ -24,11 +24,11 @@ and the user has asked you to set up the project, do the following.
 
 1. Tell the user, in two or three sentences, what will happen: you will install Lean (into
    `~/.elan`, no administrator rights needed), download linglib and the prebuilt Mathlib library,
-   and build a worked example. It needs about 15 GB of disk space and takes about
-   10 to 30 minutes depending on the connection, mostly downloading. Ask for their go-ahead once.
+   and build a worked example. It needs about 15 GB of disk space and takes about 10 minutes on a
+   fast connection, and up to 30 on a slow one, mostly downloading. Ask for their go-ahead once.
 2. Run `bash scripts/setup.sh` from the project root. It prints one line per step and writes full
-   logs to `.lake/setup-logs/`. Let it run; steps 4 and 5 are slow. Give the user a short update
-   when each step finishes.
+   logs to `.lake/setup-logs/`. Let it run. Steps 1 to 3 take about a minute; steps 4 and 5
+   are the slow ones. Give the user a short update when step 4 finishes and when step 5 finishes.
 3. If it ends with `SETUP OK`, go to "After setup" below.
 4. If it ends with `SETUP FAILED`, read the log it names and use the table below. Fix the cause,
    then run the script again; it skips finished steps.
@@ -41,12 +41,15 @@ and the user has asked you to set up the project, do the following.
 | Step 4 reports that cache files are missing, or Lean starts compiling Mathlib files | Stop the build. Do not let it compile Mathlib from source: that takes hours. Report the problem to the user and suggest they open an issue on linglib. |
 | A toolchain or version mismatch error | Do not edit `lean-toolchain` or the linglib version in `lakefile.toml` to make the error go away. These must match linglib's. Report the exact error to the user. |
 | `building from source; failed to fetch GitHub release` in step 5 | Lake could not download linglib's prebuilt files, so it is compiling the parts it needs instead. This is slower (a few minutes) but works. If it happens on every run, check that `rev` in `lakefile.toml` is a release tag. |
+| Warnings (not errors) in the logs, for example from elan's self-update check or linter warnings in linglib files | Ignore them. Only errors, or a `SETUP FAILED` line, need attention. |
 | An error in a linglib file during step 5 | This is a problem in linglib, not in the user's setup. Report it with the file name and error, and suggest opening an issue on linglib. |
 
 ### In a cloud workspace driven from a chat app
 
 If you are working in a cloud workspace that the user reaches through a chat app (for example the
-Claude app), rather than on their own computer:
+Claude app), rather than on their own computer, the following applies. If you are not sure which
+situation you are in, ask the user once whether you are working on their own computer.
+
 
 - The workspace may not last beyond this conversation. Early on, tell the user how their work
   will be saved, and at the end of each session save it before they leave: push to their own
@@ -62,8 +65,8 @@ Claude app), rather than on their own computer:
 ### In GitHub Codespaces
 
 If the environment variable `CODESPACES` is `true`, setup ran automatically when the codespace
-was created, so there is nothing to install. If `MyProject/Example.olean` is missing (see the path
-above), setup may still be running or may have failed: check `.lake/setup-logs/`, and tell the
+was created, so there is nothing to install. If `.lake/build/lib/lean/MyProject/Example.olean` is
+missing, setup may still be running or may have failed: check `.lake/setup-logs/`, and tell the
 user they can also see progress with the command "Codespaces: View Creation Log". If it failed,
 run `bash scripts/setup.sh` and continue as above.
 
@@ -90,7 +93,11 @@ Show the user the worked example in `MyProject/Example.lean`, briefly and in pla
 - The result Lean has checked: the incremental accounts are wrong on the inverse-order
   sentences, and the symmetric accounts and Limited Symmetry are right on every tested condition.
 - Lean checked the derivations. Whether the definitions capture each theory faithfully is
-  something a person has to judge. Point them to the definitions if they want to look.
+  something a person has to judge. Point them to the definitions if they want to look:
+  - The eleven accounts: `.lake/packages/linglib/Eval/Projection/Account.lean`.
+  - The scoring, including which accounts count as incremental (`incremental`):
+    `.lake/packages/linglib/Eval/Projection/ChemlaSchlenker2012.lean`.
+  - Limited Symmetry: `.lake/packages/linglib/Linglib/Studies/Kalomoiros2023.lean`.
 
 Then offer two or three things to try next, for example:
 
@@ -114,6 +121,9 @@ Then offer two or three things to try next, for example:
 
 ### Building
 
+- `lake` lives in `~/.elan/bin`. Setup adds it to the user's shell profile, but a shell you
+  start may not read that file. If `lake` is not found, run
+  `export PATH="$HOME/.elan/bin:$PATH"` first, or call `~/.elan/bin/lake` directly.
 - Check one file at a time: `lake env lean MyProject/<File>.lean`, or
   `lake build MyProject.<File>`. Avoid building all of linglib; it is large and almost never
   needed.
@@ -161,6 +171,14 @@ To update, which you should do only when the user asks:
    if it changed.
 3. Run `lake update`, then `lake build MyProject.Example`, and check that the user's own files
    still build. Tell the user if a change in linglib broke any of their files.
+
+## Saving work to GitHub
+
+If the project was cloned from `linglib-community/starter` directly, its `origin` is the shared
+starter, which the user cannot push to. If they want their work on GitHub, help them create their
+own copy ("Use this template" on the starter's GitHub page, or `gh repo create` if they use the
+GitHub command line), then point `origin` at it with `git remote set-url origin <their copy>`
+and push.
 
 ## Contributing back to linglib
 

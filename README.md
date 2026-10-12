@@ -24,13 +24,13 @@ need a paid plan, and long sessions use credits.
    > Set up the linglib starter: clone https://github.com/linglib-community/starter, read
    > AGENTS.md, and follow its setup instructions. Then walk me through the worked example.
 
-3. The agent tells you what it will install and asks you to confirm. Setup takes about 5 to 10
-   minutes. Then it explains the worked example and suggests what to try next.
+3. The agent tells you what it will install and asks you to confirm. Setup takes about 10
+   minutes on a fast connection, and up to 30 on a slow one. Then it explains the worked example and suggests what to try next.
 
 Saving your work: at the end of a session, ask the agent to save it. It can push your changes to
 your copy on GitHub, save the files to a folder on your computer if your app is connected to one,
 or give you a file to download. A new chat may start with a fresh workspace, in which case setup
-runs again (about 5 to 10 minutes).
+runs again.
 
 ## Option 2: on your own computer, with an AI agent
 
@@ -47,7 +47,9 @@ Give your agent this prompt:
 > Clone https://github.com/linglib-community/starter into a new folder called my-linglib, then
 > read AGENTS.md in that folder and follow its setup instructions.
 
-Setup takes about 10 to 30 minutes depending on your connection, mostly downloading.
+Setup takes about 10 minutes on a fast connection, and up to 30 on a slow one, mostly
+downloading. To keep your work on GitHub as well as your computer, make your own copy first
+("Use this template", as in Option 1) and give the agent its address instead.
 
 ## Option 3: in a code editor in your browser
 

@@ -28,9 +28,14 @@ fail() {
 step "1/5 Checking prerequisites"
 command -v git >/dev/null 2>&1 || fail "git is not installed."
 command -v curl >/dev/null 2>&1 || fail "curl is not installed."
-FREE_GB=$(df -Pk . | awk 'NR==2 { print int($4 / 1048576) }')
-if [ ! -d .lake/packages/mathlib ] && [ "$FREE_GB" -lt 15 ]; then
-  fail "Only ${FREE_GB} GB of disk space is free here. Setup needs about 15 GB."
+free_gb() { df -Pk "$1" | awk 'NR==2 { print int($4 / 1048576) }'; }
+FREE_GB=$(free_gb .)
+HOME_FREE_GB=$(free_gb "$HOME")
+if [ ! -d .lake/packages/mathlib ] && [ "$FREE_GB" -lt 12 ]; then
+  fail "Only ${FREE_GB} GB of disk space is free here. Setup needs about 12 GB in this folder."
+fi
+if [ ! -d "$HOME/.elan/toolchains" ] && [ "$HOME_FREE_GB" -lt 3 ]; then
+  fail "Only ${HOME_FREE_GB} GB is free in your home folder. Lean needs about 3 GB there."
 fi
 done_step
 
