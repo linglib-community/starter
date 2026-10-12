@@ -1,12 +1,13 @@
 name = "my_project"
 defaultTargets = ["MyProject"]
 
-# linglib is pinned to a specific commit (no release includes Eval yet; switch to a tag once one does).
-# To update, change both together (see AGENTS.md, "Updating linglib").
+# linglib is pinned to a release. Releases come with prebuilt files, so linglib is
+# downloaded rather than compiled. The Lean version in lean-toolchain must match
+# linglib's; change both together (see AGENTS.md, "Updating linglib").
 [[require]]
 name = "linglib"
 git = "https://github.com/linglib-community/linglib"
-rev = "e8cca80e45e1d14582f7581042265ef819c8f2f4"
+rev = "v4.34.1"
 
 [leanOptions]
 autoImplicit = false
