@@ -40,6 +40,7 @@ and the user has asked you to set up the project, do the following.
 | Network errors in step 4 (timeouts, TLS, 403) | Retry once. If it fails again, tell the user the setup needs access to `github.com` and `cache.mathlib.org`, which some university or company networks block. Suggest trying another network. |
 | Step 4 reports that cache files are missing, or Lean starts compiling Mathlib files | Stop the build. Do not let it compile Mathlib from source: that takes hours. Report the problem to the user and suggest they open an issue on linglib. |
 | A toolchain or version mismatch error | Do not edit `lean-toolchain` or the linglib version in `lakefile.toml` to make the error go away. These must match linglib's. Report the exact error to the user. |
+| `building from source; failed to fetch GitHub release` in step 5 | Lake could not download linglib's prebuilt files, so it is compiling the parts it needs instead. This is slower (a few minutes) but works. If it happens on every run, check that `rev` in `lakefile.toml` is a release tag. |
 | An error in a linglib file during step 5 | This is a problem in linglib, not in the user's setup. Report it with the file name and error, and suggest opening an issue on linglib. |
 
 ### In a cloud workspace driven from a chat app
@@ -148,9 +149,18 @@ a whole paper, say roughly how big it is and check that the user wants to go ahe
 
 ## Updating linglib
 
-linglib is pinned in `lakefile.toml`, and the Lean version in `lean-toolchain` must match the
-one in linglib's own `lean-toolchain`. To update, change the pin, copy linglib's `lean-toolchain`
-if it changed, then run `lake update` and rebuild. Do this only when the user asks.
+linglib is pinned to a release tag in `lakefile.toml` (`rev = "v4.34.1"`, for example), and the
+Lean version in `lean-toolchain` must match the one in linglib's own `lean-toolchain` at that tag.
+Each release comes with prebuilt files, which Lake downloads instead of compiling linglib.
+
+To update, which you should do only when the user asks:
+
+1. Pick a newer release from https://github.com/linglib-community/linglib/releases. Use a
+   release tag, not a branch or commit: only releases have prebuilt files.
+2. Set `rev` in `lakefile.toml` to that tag, and copy linglib's `lean-toolchain` from that tag
+   if it changed.
+3. Run `lake update`, then `lake build MyProject.Example`, and check that the user's own files
+   still build. Tell the user if a change in linglib broke any of their files.
 
 ## Contributing back to linglib
 
