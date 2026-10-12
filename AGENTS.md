@@ -23,12 +23,13 @@ Setup is complete when `.lake/build/lib/lean/MyProject/Example.olean` exists. If
 and the user has asked you to set up the project, do the following.
 
 1. Tell the user, in two or three sentences, what will happen: you will install Lean (into
-   `~/.elan`, no administrator rights needed), download linglib and the prebuilt Mathlib library,
-   and build a worked example. It needs about 15 GB of disk space and takes about 10 minutes on a
-   fast connection, and up to 30 on a slow one, mostly downloading. Ask for their go-ahead once.
+   `~/.elan`, no administrator rights needed), download linglib and the parts of the Mathlib
+   library this project uses, and build a worked example. It needs about 6 GB of disk space
+   (3 GB for Lean in the home folder, 3 GB in this folder) and takes about 5 minutes on a fast
+   connection, and up to 15 on a slow one, mostly downloading. Ask for their go-ahead once.
 2. Run `bash scripts/setup.sh` from the project root. It prints one line per step and writes full
-   logs to `.lake/setup-logs/`. Let it run. Steps 1 to 3 take about a minute; steps 4 and 5
-   are the slow ones. Give the user a short update when step 4 finishes and when step 5 finishes.
+   logs to `.lake/setup-logs/`. Let it run. Steps 1 to 3 take about a minute; step 4 is the slow
+   one. Give the user a short update when step 4 finishes and when step 5 finishes.
 3. If it ends with `SETUP OK`, go to "After setup" below.
 4. If it ends with `SETUP FAILED`, read the log it names and use the table below. Fix the cause,
    then run the script again; it skips finished steps.
@@ -36,9 +37,11 @@ and the user has asked you to set up the project, do the following.
 | Symptom in the log | What to do |
 |---|---|
 | `lake: command not found` after elan installed | Use `~/.elan/bin/lake`, or run `source ~/.elan/env` first. Tell the user a new terminal will pick it up automatically. |
-| Disk space error | Tell the user how much is free and that about 15 GB is needed. Do not delete anything to make room without asking. |
+| Disk space error | Tell the user how much is free and that about 6 GB is needed (3 GB in this folder, 3 GB in the home folder). Do not delete anything to make room without asking. |
+| `python3 is not installed` | Python 3 runs the script that downloads only the Mathlib files the project uses. Ask the user before installing it (on macOS, `xcode-select --install`; on Ubuntu or Debian, `sudo apt install python3`), then run the setup again. |
 | Network errors in step 4 (timeouts, TLS, 403) | Retry once. If it fails again, tell the user the setup needs access to `github.com` and `cache.mathlib.org`, which some university or company networks block. Suggest trying another network. |
-| Step 4 reports that cache files are missing, or Lean starts compiling Mathlib files | Stop the build. Do not let it compile Mathlib from source: that takes hours. Report the problem to the user and suggest they open an issue on linglib. |
+| Step 4 says Mathlib files could not be downloaded | Do not go on to build: Lean would compile the missing files, which takes hours. Run `python3 scripts/get_mathlib.py --verbose` once more. If files are still missing, report the problem to the user and suggest they open an issue on linglib. |
+| Lean starts compiling Mathlib files (`Building Mathlib...` or `Built Mathlib...` lines) | Stop the build at once. Run `python3 scripts/get_mathlib.py`, then build again with `bash scripts/build.sh`. See "Building" below. |
 | A toolchain or version mismatch error | Do not edit `lean-toolchain` or the linglib version in `lakefile.toml` to make the error go away. These must match linglib's. Report the exact error to the user. |
 | `building from source; failed to fetch GitHub release` in step 5 | Lake could not download linglib's prebuilt files, so it is compiling the parts it needs instead. This is slower (a few minutes) but works. If it happens on every run, check that `rev` in `lakefile.toml` is a release tag. |
 | Warnings (not errors) in the logs, for example from elan's self-update check or linter warnings in linglib files | Ignore them. Only errors, or a `SETUP FAILED` line, need attention. |
@@ -70,16 +73,29 @@ missing, setup may still be running or may have failed: check `.lake/setup-logs/
 user they can also see progress with the command "Codespaces: View Creation Log". If it failed,
 run `bash scripts/setup.sh` and continue as above.
 
-Codespaces use the user's free monthly allowance, and this one takes about 12 GB of storage.
+Codespaces use the user's free monthly allowance, and this one takes about 5 GB of storage.
 Remind the user to stop the codespace when they finish a session, and to delete it from
 github.com/codespaces once they no longer need it (after committing anything they want to keep).
 
 ### Windows
 
-`scripts/setup.sh` needs a Unix shell. On Windows, prefer WSL if it is installed. Otherwise, do the
-same steps by hand in PowerShell: install elan with the Windows installer from
-https://github.com/leanprover/elan, then run `lake --version`, `lake exe cache get` and
-`lake build MyProject.Example` from the project root. The table above still applies.
+`scripts/setup.sh` and `scripts/build.sh` need a Unix shell. On Windows, prefer WSL if it is
+installed. Otherwise, do the same steps by hand in PowerShell, from the project root. Install elan
+with the Windows installer from https://github.com/leanprover/elan, and Python 3 if it is missing
+(ask first). Then:
+
+```
+$env:MATHLIB_NO_CACHE_ON_UPDATE = "1"
+lake --version
+lake env lean --version
+py scripts\get_mathlib.py
+lake build MyProject.Example
+```
+
+The third command downloads linglib and the other packages and builds nothing. Use `python` in
+place of `py` if `py` is not found. Later, wherever these instructions say
+`bash scripts/build.sh <target>`, run `py scripts\get_mathlib.py <target>` and then
+`lake build <target>`, with the variable above set. The table above still applies.
 
 ## After setup
 
@@ -121,15 +137,36 @@ Then offer two or three things to try next, for example:
 
 ### Building
 
+This project downloads only the parts of Mathlib it uses (about 0.7 GB instead of 7 GB). A file
+that imports something new may need Mathlib files that are not there yet. If they are missing
+when a build starts, Lean compiles them instead, and that takes hours. So:
+
+- **Always build with `bash scripts/build.sh <target>`**, for example
+  `bash scripts/build.sh MyProject.Example`. It downloads any missing Mathlib files for the
+  target (`python3 scripts/get_mathlib.py <target>`) and then runs `lake build <target>`. After
+  adding or changing any `import` line, build through the script again before anything else.
+  Do not call `lake build` or `lake env lean` on a file until the script has run for it.
+- **If a build ever starts compiling Mathlib** (lines such as `Building Mathlib...` or
+  `Built Mathlib...`), stop it at once. Run `python3 scripts/get_mathlib.py`, then build again
+  through the script.
+- **The Lean extension in VS Code builds a file's imports as soon as the file is opened.** After
+  changing imports, run `python3 scripts/get_mathlib.py` before opening or reloading that file
+  in the editor.
+
+Also:
+
 - `lake` lives in `~/.elan/bin`. Setup adds it to the user's shell profile, but a shell you
   start may not read that file. If `lake` is not found, run
   `export PATH="$HOME/.elan/bin:$PATH"` first, or call `~/.elan/bin/lake` directly.
-- Check one file at a time: `lake env lean MyProject/<File>.lean`, or
-  `lake build MyProject.<File>`. Avoid building all of linglib; it is large and almost never
-  needed.
+  `scripts/build.sh` does this itself.
+- Check one file at a time: `bash scripts/build.sh MyProject.<File>`. Avoid building all of
+  linglib; it is large and almost never needed.
 - After a change, rebuild before you tell the user something works.
-- The first build of a file that imports a new part of linglib can take several minutes,
-  because that part of linglib is compiled then. Tell the user when this happens.
+- A file that imports a new part of linglib does not compile linglib: linglib's prebuilt files
+  are unpacked the first time they are used, which takes seconds. Downloading more Mathlib
+  files for it usually takes under a minute.
+- If the user's work comes to import much of linglib, `bash scripts/setup.sh --full` downloads
+  all of Mathlib once (about 11 GB of disk space in total). Ask before running it.
 
 ### Formalizing a claim
 
@@ -169,8 +206,9 @@ To update, which you should do only when the user asks:
    release tag, not a branch or commit: only releases have prebuilt files.
 2. Set `rev` in `lakefile.toml` to that tag, and copy linglib's `lean-toolchain` from that tag
    if it changed.
-3. Run `lake update`, then `lake build MyProject.Example`, and check that the user's own files
-   still build. Tell the user if a change in linglib broke any of their files.
+3. Run `MATHLIB_NO_CACHE_ON_UPDATE=1 lake update` (without the variable, Lake downloads all of
+   Mathlib, about 7 GB), then `bash scripts/build.sh MyProject.Example`, and check that the
+   user's own files still build. Tell the user if a change in linglib broke any of their files.
 
 ## Saving work to GitHub
 
