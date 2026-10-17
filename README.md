@@ -1,11 +1,8 @@
-# linglib starter
-
-A starting point for formal linguistics with [linglib](https://github.com/linglib-community/linglib), a
-Lean 4 library that checks whether theories make the predictions their authors claim.
+# Getting started with linglib
 
 You do not need to install Lean yourself or know how to program. An AI agent installs
 everything, writes most of the Lean, and explains what it did. Your job is the part that needs a
-linguist: checking that each formal statement says what the paper says.
+linguist.
 
 There are three ways to start. The first is the easiest for most people.
 
