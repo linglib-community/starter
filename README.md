@@ -24,8 +24,9 @@ need a paid plan, and long sessions use credits.
    > Set up the linglib starter: clone https://github.com/linglib-community/starter, read
    > AGENTS.md, and follow its setup instructions. Then walk me through the worked example.
 
-3. The agent tells you what it will install and asks you to confirm. Setup takes about 10
-   minutes on a fast connection, and up to 30 on a slow one. Then it explains the worked example and suggests what to try next.
+3. The agent tells you what it will install and asks you to confirm. Setup takes about 5
+   minutes on a fast connection, and up to 15 on a slow one. Then it explains the worked example
+   and suggests what to try next.
 
 Saving your work: at the end of a session, ask the agent to save it. It can push your changes to
 your copy on GitHub, save the files to a folder on your computer if your app is connected to one,
@@ -38,7 +39,7 @@ Use this if you want everything to stay on your machine. You need:
 
 - An AI agent that can edit files and run commands on your computer, such as the Claude app
   connected to a folder, Claude Code, OpenAI's Codex, or Cursor.
-- About 15 GB of free disk space, and a network connection that allows access to `github.com` and
+- About 6 GB of free disk space, and a network connection that allows access to `github.com` and
   `cache.mathlib.org`.
 - macOS or Linux works best. Windows works through WSL or with a few manual steps.
 
@@ -47,7 +48,7 @@ Give your agent this prompt:
 > Clone https://github.com/linglib-community/starter into a new folder called my-linglib, then
 > read AGENTS.md in that folder and follow its setup instructions.
 
-Setup takes about 10 minutes on a fast connection, and up to 30 on a slow one, mostly
+Setup takes about 5 minutes on a fast connection, and up to 15 on a slow one, mostly
 downloading. To keep your work on GitHub as well as your computer, make your own copy first
 ("Use this template", as in Option 1) and give the agent its address instead.
 
@@ -60,7 +61,7 @@ Code panel in the sidebar. It suits workshops, where everyone needs the same env
 people who are comfortable with code editors.
 
 - Codespaces are paid for by your GitHub account, which includes a free monthly allowance, or by
-  the linglib-community organization for its members. This project uses about 12 GB of storage,
+  the linglib-community organization for its members. This project uses about 5 GB of storage,
   so stop the codespace when you finish a session and delete it from github.com/codespaces when
   you no longer need it.
 - Claude Code requires a paid Claude plan.
@@ -87,7 +88,13 @@ statement together, so you can compare them. Only you should mark a claim as che
 
 ## Setting up without an agent
 
-If you are comfortable with a terminal, run `bash scripts/setup.sh` from this folder.
+If you are comfortable with a terminal, run `bash scripts/setup.sh` from this folder. It
+downloads only the parts of the Mathlib library the project uses. If you expect to import much
+of linglib, `bash scripts/setup.sh --full` downloads all of Mathlib instead, which brings the
+total to about 11 GB.
+
+After changing an `import` line, build with `bash scripts/build.sh MyProject.<File>` rather than
+`lake build`: it first downloads any Mathlib files the new import needs.
 
 ## Files
 
@@ -95,5 +102,7 @@ If you are comfortable with a terminal, run `bash scripts/setup.sh` from this fo
 - `MyProject/`: your work. `Example.lean` is the worked example; `MyFirstStudy.lean` is a
   template for formalizing a claim.
 - `scripts/setup.sh`: the setup steps, which the agent (or the codespace) runs for you.
-- `.devcontainer/`: the configuration for Option 1.
+- `scripts/build.sh` and `scripts/get_mathlib.py`: build a file after downloading the Mathlib
+  files it needs.
+- `.devcontainer/`: the configuration for Option 3.
 - `lakefile.toml` and `lean-toolchain`: which versions of linglib and Lean this project uses.

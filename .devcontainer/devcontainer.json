@@ -6,15 +6,22 @@
 
   // Runs when the codespace is created, and again whenever a prebuild is refreshed,
   // so prebuilds pick up changes such as a new linglib version. Same script a local
-  // agent runs; about 10 minutes from scratch, seconds when nothing changed.
+  // agent runs; about 5 minutes from scratch, seconds when nothing changed.
   "updateContentCommand": "bash scripts/setup.sh",
 
-  // Make lean and lake available in every terminal and to the agent.
-  "remoteEnv": {
-    "PATH": "/home/vscode/.elan/bin:${containerEnv:PATH}"
+  // Python runs scripts/get_mathlib.py, which downloads only the Mathlib files the project uses.
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "os-provided", "installTools": false }
   },
 
-  // Lean needs some memory; storage is mostly the prebuilt Mathlib files (about 12 GB).
+  // Make lean and lake available in every terminal and to the agent, and keep `lake update`
+  // from downloading all of Mathlib (about 7 GB); scripts/build.sh fetches what is needed.
+  "remoteEnv": {
+    "PATH": "/home/vscode/.elan/bin:${containerEnv:PATH}",
+    "MATHLIB_NO_CACHE_ON_UPDATE": "1"
+  },
+
+  // Lean needs some memory; Lean and the prebuilt files take about 5 GB of storage.
   "hostRequirements": {
     "memory": "8gb",
     "storage": "32gb"

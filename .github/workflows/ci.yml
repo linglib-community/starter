@@ -1,6 +1,10 @@
 # Builds the starter weekly and on every change, so the template does not
 # quietly break when linglib or Mathlib move on. Tests both ways in:
 # the setup script a local agent runs, and the Codespaces dev container.
+#
+# Setup downloads only the Mathlib files the project uses. Each job fails if Lean
+# compiled a file that should have been downloaded, since on a user's machine that
+# is a build that runs for hours.
 name: Build starter
 
 on:
@@ -10,13 +14,63 @@ on:
     - cron: "17 6 * * 1"
   workflow_dispatch:
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
+  script-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test the download script (needs neither Lean nor a network)
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+
   setup-script:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Run the setup script a new user's agent would run
         run: bash scripts/setup.sh
+      - name: Check that nothing from Mathlib or linglib was compiled
+        run: |
+          if grep -rEn 'Buil(t|ding) (Mathlib|Linglib|Eval)\.' .lake/setup-logs/; then
+            echo "Setup compiled files that should have been downloaded."
+            exit 1
+          fi
+      - name: Show how much disk space the setup uses
+        if: always()
+        run: du -sh .lake ~/.elan
+
+  new-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run the setup script
+        run: bash scripts/setup.sh
+      - name: Import another part of linglib and build it through scripts/build.sh
+        run: |
+          count() { find .lake/packages/mathlib/.lake/build/lib/lean -name '*.olean' | wc -l; }
+          # A part of linglib that needs Mathlib files the worked example does not use. If a
+          # newer linglib renames this module, pick another one that brings in extra files.
+          printf 'import Linglib.Semantics.Exhaustification.Finite\n' > MyProject/CiProbe.lean
+          before=$(count)
+          if python3 scripts/get_mathlib.py --check MyProject/CiProbe.lean; then
+            echo "--check passed although the new import needs files that are not there."
+            exit 1
+          fi
+          bash scripts/build.sh MyProject.CiProbe 2>&1 | tee build.log
+          after=$(count)
+          echo "Prebuilt Mathlib files: $before before, $after after."
+          if [ "$after" -le "$before" ]; then
+            echo "The new import did not bring in any more Mathlib files."
+            exit 1
+          fi
+          python3 scripts/get_mathlib.py --check MyProject/CiProbe.lean
+          if grep -En 'Buil(t|ding) (Mathlib|Linglib|Eval)\.' build.log; then
+            echo "The build compiled files that should have been downloaded."
+            exit 1
+          fi
 
   devcontainer:
     runs-on: ubuntu-latest
@@ -26,4 +80,11 @@ jobs:
         uses: devcontainers/ci@v0.3
         with:
           push: never
-          runCmd: lake build MyProject.Example
+          runCmd: |
+            set -e
+            lake build MyProject.Example
+            if grep -rEn 'Buil(t|ding) (Mathlib|Linglib|Eval)\.' .lake/setup-logs/; then
+              echo "Setup compiled files that should have been downloaded."
+              exit 1
+            fi
+            du -sh .lake "$HOME/.elan"
